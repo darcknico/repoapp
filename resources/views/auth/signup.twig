@@ -1,0 +1,39 @@
+{% extends 'templates/app.twig' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">Nueva Cuenta</div>
+				<div class="panel-body">
+					<form action="{{ path_for('auth.signup')}}" method="post" autocomplete="off">
+						<div class="form-group{{ errors.correo ? ' has-error' : ''}}">
+							<label for="correo">Email</label>
+							<input type="text" name="correo" id="correo" placeholder="tu@dominio.com" class="form-control" value="{{ old.correo }}">
+							{% if errors.correo %}
+								<span class="help-block">{{ errors.correo | first }}</span>
+							{% endif %}
+						</div>
+						<div class="form-group{{ errors.nombre ? ' has-error' : ''}}">
+							<label for="nombre">Nombre</label>
+							<input type="text" name="nombre" id="nombre" class="form-control" value="{{ old.nombre }}">
+							{% if errors.nombre %}
+								<span class="help-block">{{ errors.nombre | first }}</span>
+							{% endif %}
+						</div>
+						<div class="form-group{{ errors.contraseña ? ' has-error' : ''}}">
+							<label for="contraseña">Contraseña</label>
+							<input type="password" name="contraseña" id="contraseña" class="form-control" value="{{ old.contraseña }}">
+							{% if errors.contraseña %}
+								<span class="help-block">{{ errors.contraseña | first }}</span>
+							{% endif %}
+						</div>
+						<button type="submit" class="btn btn-default">Registrarse</button>
+
+						{{ csrf.field | raw }}
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

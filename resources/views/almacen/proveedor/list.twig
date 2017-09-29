@@ -1,0 +1,46 @@
+{% extends 'templates/app.twig' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">Listado de Proveedores</div>
+				<div class="panel-body">
+					{% if data | length %}
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th>Nombre</th>
+								<th>Descripcion</th>
+								<th>Cantidad Productos</th>
+								<th>Opciones</th>
+							</tr>
+							</thead>
+							<tbody>
+							{% for row in data %}
+							<tr>
+								<td>{{row.nombre}}</td>
+								<td>{{row.descripcion}}</td>
+								<td>{{row.proveedorproductos.count}}</td>
+								<td>
+									<a href="{{ path_for('almacen.proveedor.producto.list', { 'idProveedor':row.id }) }}" class='btn btn-default btn-xs' role='button'><span class='glyphicon glyphicon-link'></span> Producto</a>
+									<a href="{{ path_for('almacen.proveedor.edit', { 'id':row.id }) }}" class='btn btn-default btn-xs' role='button'><span class='glyphicon glyphicon-pencil'></span></a>
+									<a href="{{ path_for('almacen.proveedor.delete', { 'id':row.id }) }}" class='btn btn-default btn-xs' role='button'><span class='glyphicon glyphicon-remove'></span></a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					{% else %}
+					<label>Sin Registros</label>
+					{% endif %}
+					<a class="btn btn-primary" href="{{ path_for('almacen.proveedor.new') }}">Agregar Proveedor</a>
+				</div>
+			</div>
+
+			<div class="panel-footer">
+					<a class="btn btn-primary" href="{{ path_for('home') }}">Volver</a>
+			</div>
+		</div>
+	</div>
+{% endblock %}

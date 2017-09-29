@@ -1,0 +1,85 @@
+{% extends 'templates/app.twig' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="panel panel-default">
+				{% if old.id %}
+				<div class="panel-heading">Modificar Lista Venta</div>
+				{% else %}
+				<div class="panel-heading">Agregar Lista Venta</div>
+				{% endif %}
+				<div class="panel-body">
+					{% if old.id %}
+					<form action="{{ path_for('almacen.listaventa.edit',{'id':old.id}) }}" method="post" autocomplete="off">
+					{% else %}
+					<form action="{{ path_for('almacen.listaventa')}}" method="post" autocomplete="off">
+					{% endif %}
+						<div class="form-group{{ errors.nombre ? ' has-error' : ''}}">
+							<label for="nombre">Nombre</label>
+							<input type="text" name="nombre" id="nombre" class="form-control" value="{{ old.nombre }}">
+							{% if errors.nombre %}
+								<span class="help-block">{{ errors.nombre | first }}</span>
+							{% endif %}
+						</div>
+
+						{% if old.id %}
+						<button type="submit" class="btn btn-default">Modificar</button>
+						{% else %}
+						<button type="submit" class="btn btn-default">Agregar</button>
+						{% endif %}
+
+						{{ csrf.field | raw }}
+					</form>
+				</div>
+			</div>
+
+			{% if old.id %}
+			<div class="panel panel-default">
+				<div class="panel-heading">Listado de Marcas</div>
+				<div class="panel-body">
+					{% if data | length %}
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th>Marca</th>
+								<th>Producto</th>
+								<th>Cantidad</th>
+								<th>Precio</th>
+								<th>SubTotal</th>
+								<th>Opciones</th>
+							</tr>
+							</thead>
+							<tbody>
+							{% for row in data %}
+							<tr>
+								<td>{{row.producto.marca.nombre}}</td>
+								<td>{{row.producto.nombre}}</td>
+								<td>{{row.cantidad}}</td>
+								<td>{{row.precio|number_format(2,',', '.')}}</td>
+								<td>{{row.subtotal|number_format(2,',', '.')}}</td>
+								<td>
+									<a href="{{ path_for('almacen.listaventa.producto.get',{  'idListaVenta':old.id, 'id':row.id } ) }}" class='btn btn-default btn-xs' role='button'><span class='glyphicon glyphicon-pencil'></span></a>
+									<a href="{{ path_for('almacen.listaventa.producto.delete', {'idListaVenta':old.id, 'id':row.id } ) }}" class='btn btn-default btn-xs' role='button'><span class='glyphicon glyphicon-remove'></span></a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					<div class="form-group">
+							<label for="total">Total</label>
+							<input id="total" class="form-control" value="{{ old.total|number_format(2,',', '.') }}" readonly="" placeholder="0.00">
+						</div>
+					{% else %}
+					<label>No hay registros</label>
+					{% endif %}
+					<a class="btn btn-primary" href="{{ path_for('almacen.listaventa.producto.new',{'idListaVenta':old.id}) }}">Agregar Producto</a>
+				</div>
+			</div>
+			{% endif %}
+			<div class="panel panel-footer">
+				<a class="btn btn-primary" href="{{ path_for('almacen.listaventa.list',{'idUsuario':auth.user.identificadorUsuario}) }}">Volver</a>
+			</div>
+		</div>
+	</div>
+{% endblock %}

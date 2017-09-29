@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Controllers\Almacen;
+
+use App\Models\Usuario;
+use Psr\Http\Message\UploadedFileInterface as Files;
+use App\Controllers\Controller;
+use Respect\Validation\Validator as v;
+
+class UsuarioControlador extends Controller{
+
+	public function listAll($request,$response)
+	{
+		$data = Usuario::all();
+
+		return $this->view->render($response,'almacen/usuario/list.twig',['data'=>$data]);
+	}
+
+	public function getFirst($request,$response)
+	{
+		return $this->view->render($response,'almacen/usuario/edit.twig');
+	}
+
+	public function get($request,$response,$args)
+	{
+		$old = Marca::where('id',$args['id'])->first();
+
+		return $this->view->render($response,'almacen/usuario/edit.twig',['old'=>$old]);
+	}
+
+	public function edit($request,$response,$args)
+	{
+		$id = $args['id'];
+		$usuairo = Usuario::where('id',$args['id'])->first();
+
+		$validation = $this->validator->validate($request, [
+			'nombre' => v::noWhitespace()->notEmpty()
+			]);
+
+
+		if($validation->failed() ){
+			return $response->withRedirect($this->router->pathFor('almacen.marca')."/edit/".$id);
+		}
+
+		$usuairo->update([
+			'nombre' => $request->getParam('nombre')
+			]);
+
+		$this->flash->addMessage('info', 'Modificacion de la marca con exito');
+
+		return $response->withRedirect($this->router->pathFor('almacen.marca.list'));
+	}
+
+	public function delete($request,$response,$args)
+	{
+		$marca = Usuario::where('id',$args['id'])->first();
+		$marca->delete();
+
+		return $response->withRedirect($this->router->pathFor('almacen.usuario.list'));
+	}
+
+	public function postImage($request,$response,$args)
+	{
+		$imagepath = '';
+		$file = $request->geUploadedFiles();
+		$newfile = $files['file'];
+		if($newfile->getError()->getError() === UPLOAD_ERR_OK ) {
+			$uploadFilename = $newfile->getClientFilename();
+			$newfile->moveTo("assets/images". $uploadFilename);
+			$imagepath = "assets/images/".$uploadFilename;
+		}
+
+	}
+}

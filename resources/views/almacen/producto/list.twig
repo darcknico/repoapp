@@ -1,0 +1,41 @@
+{% extends 'templates/app.twig' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">Listado de Productos</div>
+				<div class="panel-body">
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th>Nombre</th>
+								<th>Descripcion</th>
+								<th>Marca</th>
+								<th>Ultimo Precio</th>
+								<th>Fecha Precio</th>
+							</tr>
+							</thead>
+							<tbody>
+							{% for row in data %}
+							<tr>
+								<td>{{row.nombre}}</td>
+								<td>{{row.descripcion}}</td>
+								<td>{{row.marca.nombre}}</td>
+								<td>{{row.preciosVenta.first.precio}}</td>
+								<td>{{row.preciosVenta.first.creado}}</td>
+								<td>
+									<a href="{{ path_for('almacen.producto.precioventa',{ 'idProducto':row.id}) }}" class='btn btn-default btn-xs' role='button'>$ <span class='glyphicon glyphicon-plus'></span> Venta</a>
+									<a href="{{ path_for('almacen.producto.edit',{'id':row.id}) }}" class='btn btn-default btn-xs' role='button'><span class='glyphicon glyphicon-pencil'></span></a>
+									<a href="{{ path_for('almacen.producto.delete',{'id':row.id}) }}" class='btn btn-default btn-xs' role='button'><span class='glyphicon glyphicon-remove'></span></a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					<a class="btn btn-primary" href="{{ path_for('almacen.producto.new') }}">Agregar Producto</a>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

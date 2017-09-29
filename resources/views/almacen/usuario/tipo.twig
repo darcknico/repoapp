@@ -1,0 +1,263 @@
+{% extends 'templates/app.twig' %}
+
+<div class="container" style="padding-top:20px;">
+	<div ng-app="appUsuarioTipo" data-ng-controller="oneController" class="container">
+		<div ng-show="error"  class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		<p>{{ error }}</p>
+		</div>
+
+		<p><a data-ng-click="showadd()" href="javascript:;" class="btn btn-primary">Agregar Nuevo Tipo Usuario</a></p>
+
+		<div class="modal fade" id="oneModel" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+						<h4 class="modal-title" id="myModalLabel" ng-hide="editMode">Agregar</h4>
+						<h4 class="modal-title" id="myModalLabel" ng-show="editMode">Editar/h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal" role="form" name="addOneform">
+							<div class="form-group">
+								<label for="title" class="col-sm-2 control-label">Nombre</label>
+								<div class="col-sm-10">
+									<input type="text" data-ng-model="one.nombre" class="form-control" id="title" placeholder="Tu Nombre" required title="Ingresa tu Nombre" />
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-offset-2 col-sm-10">
+									<span data-ng-hide="editMode">
+										<input type="submit" value="Agregar" ng-disabled="addOneform.$invalid" data-ng-click="add()" class="btn btn-primary" />
+									</span>
+									<span data-ng-show="editMode">
+										<input type="submit" value="Editar" ng-disabled="addOneform.$invalid" data-ng-click="update()" class="btn btn-primary" />
+									</span>
+									<input type="button" value="Cancelar" data-ng-click="cancel()" class="btn btn-primary" />
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+			<h1>ones List</h1>
+			<table class="table table-hover">
+				<tr>
+					<th>Identificacion</th>
+					<td>Nombre</td>
+					<th>Apellido</th>
+					<th>Domicilio</th>
+					<th></th>
+				</tr>
+
+				<tr data-ng-repeat="one in ones">
+					<td><strong>{[{ one.id }]}</strong></td>
+					<td>
+						<p>{[{ one.nombre }]}</p>
+					</td>
+					<td>
+						<p>{[{ one.creado }]}</p>
+					</td>
+					<td>
+						<p>
+							<a data-ng-click="get(one)" href="javascript:;">Detalle</a> |
+							<a data-ng-click="edit(one)" href="javascript:;">Editar</a> |
+							<a data-ng-click="showconfirm(one)" href="javascript:;">Borrar</a>
+						</p>
+					</td>
+				</tr>
+			</table>
+			<hr />
+
+			<div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+							<h4 class="modal-title" id="myModalLabel">Detalle Tipo Autor</h4>
+						</div>
+						<div class="modal-body">
+							<form class="form-horizontal" role="form" name="viewone">
+								<div class="form-group">
+									<label for="Nombre" class="col-sm-2 control-label">Nombre</label>
+									<div class="col-sm-10">
+										{[{one.nombre}]}
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="Creado" class="col-sm-2 control-label">Fecha Creacion</label>
+									<div class="col-sm-10">
+										{[{one.creado}]}
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+							<h4 class="modal-title" id="myModalLabel">Confirm Action</h4>
+						</div>
+						<div class="modal-body">
+							Esta seguro de borrar el Tipo con ID {[{one.id}]} ?
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-ng-click="delete()">Ok</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script>
+		var app = angular.module('appUsuarioTipo', []);
+		app.config(function($interpolateProvider){
+			    $interpolateProvider.startSymbol('{[{').endSymbol('}]}');
+			});
+		var baseAddress = 'http://localhost/api.slim/public/';
+		var url = "";
+
+		app.factory('appFactory', function ($http) {
+			var recurso = "usuariotipo"
+			return {
+				getList: function () {
+					url = baseAddress + "usuariotipo";
+					return $http.get(url);
+				},
+				getOne: function (one) {
+					url = baseAddress + "usuariotipo/" + one.id;
+					return $http.get(url);
+				},
+				addOne: function (one) {
+					url = baseAddress + "usuariotipo";
+					return $http.post(url, one);
+				},
+				deleteOne: function (one) {
+					url = baseAddress + "usuariotipo/" + one.id;
+					return $http.delete(url);
+				},
+				updateOne: function (one) {
+					url = baseAddress + "usuariotipo/" + one.id;
+					return $http.put(url, one);
+				}
+			};
+		});
+
+		app.controller('oneController', function PostController($scope, appFactory) {
+			$scope.ones = [];
+			$scope.one = null;
+			$scope.editMode = false;
+
+			//get one
+			$scope.get = function () {
+				$scope.one = this.one;
+				$('#viewModal').modal('show');
+			};
+
+			//get all ones
+			$scope.getAll = function () {
+				appFactory.getList().success(function (data) {
+					$scope.ones = data.Records;
+				}).error(function (data) {
+					$scope.error = "Ocurrio un erro al cargar la lista! " + data.ExceptionMessage;
+				});
+			};
+
+			// add one
+			$scope.add = function () {
+				var oneActual = this.one;
+				if (oneActual != null && oneActual.nombre != null) {
+					appFactory.addOne(oneActual).success(function (data) {
+						$scope.addMode = false;
+						oneActual.id = data.id;
+						$scope.ones.push(oneActual);
+
+						//reset form
+						$scope.one = null;
+						// $scope.addOneform.$setPristine(); //for form reset
+
+						$('#oneModel').modal('hide');
+					}).error(function (data) {
+						$scope.error = "Ocurrio un error mientras se agregaba el one! " + data.ExceptionMessage;
+					});
+				}
+			};
+
+			//edit one
+			$scope.edit = function () {
+				$scope.one = this.one;
+				$scope.editMode = true;
+				$('#oneModel').modal('show');
+			};
+
+			//update one
+			$scope.update = function () {
+				var oneActual = this.one;
+				appFactory.updateOne(oneActual).success(function (data) {
+					oneActual.editMode = false;
+
+					$('#oneModel').modal('hide');
+				}).error(function (data) {
+					$scope.error = "Ocurrio un error mientras se editaba el one! " + data.ExceptionMessage;
+				});
+			};
+
+			// delete one
+			$scope.delete = function () {
+				var oneActual = $scope.one;
+				appFactory.deleteOne(oneActual).success(function (data) {
+					$('#confirmModal').modal('hide');
+					$scope.ones = $scope.ones.filter(
+					function(cli){
+						return cli.id!==oneActual.id;
+					}
+					)
+				//$scope.ones.pop(oneActual);
+
+				}).error(function (data) {
+					$scope.error = "Ocurrio un error mientras se borraba el one! " + data.ExceptionMessage;
+
+					$('#confirmModal').modal('hide');
+				});
+			};
+
+			//Model popup events
+			$scope.showadd = function () {
+				$scope.one = null;
+				$scope.editMode = false;
+				$('#oneModel').modal('show');
+			};
+
+			$scope.showedit = function () {
+				$('#oneModel').modal('show');
+			};
+
+			$scope.showconfirm = function () {
+				$scope.one = this.one;
+				$('#confirmModal').modal('show');
+			};
+
+			$scope.cancel = function () {
+				$scope.one = null;
+				$('#oneModel').modal('hide');
+			}
+
+			// initialize your ones data
+			$scope.getAll();
+
+		});
+	</script>
+{% endblock %}

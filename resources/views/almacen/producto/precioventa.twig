@@ -1,0 +1,73 @@
+{% extends 'templates/app.twig' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+
+			<div class="panel panel-default">
+				<div class="panel-heading">Descripcion del Producto</div>
+				<div class="form-group">
+					<label for="marca">Marca</label>
+					<input type="text" name="marca" id="marca" class="form-control" value="{{ producto.marca.first.nombre }}" readonly="">
+				</div>
+				<div class="form-group">
+					<label for="nombre">Nombre</label>
+					<input type="text" name="nombre" id="nombre" class="form-control" value="{{ producto.nombre }}" readonly="">
+				</div>
+
+				<div class="form-group">
+					<label for="descripcion">Descripcion</label>
+					<input type="text" name="descripcion" id="descripcion" class="form-control" value="{{ producto.descripcion }}" readonly="">
+				</div>
+			</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">Listado de Precios para la Venta del Producto</div>
+				<div class="panel-body">
+				{% if data %}
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th>Precio</th>
+								<th>Fecha</th>
+							</tr>
+							</thead>
+							<tbody>
+							{% for row in data %}
+							<tr>
+								<td>{{row.precio | number_format(2, '.', ',') }}</td>
+								<td>{{row.creado}}</td>
+								<td>
+									<a href="{{ path_for('almacen.producto.precioventa.delete',{'idProducto':idProducto,'id':row.id}) }}" class='btn btn-default btn-xs' role='button'><span class='glyphicon glyphicon-remove'></span></a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				{% else %}
+					<div class="form-group">
+						<label>No hay Precios</label>
+					</div>
+				{% endif %}
+				</div>
+			</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">Agregar Precio</div>
+				<div class="panel-body">
+					<form action="{{ path_for('almacen.producto.precioventa',{'idProducto':idProducto}) }}" method="post" autocomplete="off">
+						<div class="form-group{{ errors.precio ? ' has-error' : ''}}">
+								<label for="precio">Precio</label>
+								<input type="number" name="precio" id="precio" class="form-control" value="{{ old.precio | number_format(2, '.', ',') }}" placeholder="0.00" step="0.01" >
+								{% if errors.precio %}
+									<span class="help-block">{{ errors.precio | first }}</span>
+								{% endif %}
+						</div>
+						<button type="submit" class="btn btn-default">Agregar</button>
+						{{ csrf.field | raw }}
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

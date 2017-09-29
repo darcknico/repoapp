@@ -1,0 +1,13 @@
+{% extends 'templates/app.twig' %}
+
+{% block content %}
+	Pagina PRINCIPAL
+	<br>
+	{% if auth.check %}
+		<a class="btn btn-primary" href="{{ path_for('almacen.marca.list') }}">Lista de Marca</a>
+		<a class="btn btn-primary" href="{{ path_for('almacen.producto.list') }}">Lista de Productos</a>
+		<a class="btn btn-primary" href="{{ path_for('almacen.proveedor.list') }}">Lista de Proveedores</a>
+		<a class="btn btn-primary" href="{{ path_for('almacen.listaventa.list') }}">Lista de Compras Cliente</a>
+		<a class="btn btn-primary" href="{{ path_for('almacen.listacompra.list') }}">Lista de Compras al Proveedor</a>
+	{% endif %}
+{% endblock %}

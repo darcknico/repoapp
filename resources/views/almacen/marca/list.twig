@@ -1,0 +1,35 @@
+{% extends 'templates/app.twig' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">Listado de Marcas</div>
+				<div class="panel-body">
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th>Nombre</th>
+								<th>Descripcion</th>
+								<th></th>
+							</tr>
+							</thead>
+							<tbody>
+							{% for row in data %}
+							<tr>
+								<td>{{row.nombre}}</td>
+								<td>{{row.descripcion}}</td>
+								<td>
+									<a href="{{ path_for('almacen.marca.edit',{'id':row.id} ) }}" class='btn btn-default btn-xs' role='button'><span class='glyphicon glyphicon-pencil'></span></a>
+									<a href="{{ path_for('almacen.marca.delete',{'id':row.id} ) }}" class='btn btn-default btn-xs' role='button'><span class='glyphicon glyphicon-remove'></span></a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					<a class="btn btn-primary" href="{{ path_for('almacen.marca.new') }}">Agregar Marca</a>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

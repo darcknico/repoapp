@@ -1,0 +1,150 @@
+{% extends 'templates/app.twig' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="panel panel-default">
+				{% if old.id %}
+				<div class="panel-heading">Modificar Lista Venta</div>
+				{% else %}
+				<div class="panel-heading">Agregar Lista Venta </div>
+				{% endif %}
+				<div class="panel-body">
+					{% if old.id %}
+					<form action="{{ path_for('almacen.listacompra.detalle.edit',{ 'idListaCompra': listacompra.id, 'id': old.id } ) }}" method="post" autocomplete="off">
+					{% else %}
+					<form action="{{ path_for('almacen.listacompra.detalle.new',{ 'idListaCompra': listacompra.id} ) }}" method="post" autocomplete="off">
+					{% endif %}
+
+						{% if productos | length %}
+						<div class="form-group">
+							<label for="producto">Producto</label>
+							<select class="form-control" name="producto" id="producto">
+								{% for row in productos %}
+									{% if row.id==old.idProducto %}
+										<option class="option" value="{{row.id}}" selected="true">
+											{{row.nombre}}
+										</option>
+									{% else %}
+										<option class="option" value="{{row.id}}">
+											{{row.nombre}}
+										</option>
+									{% endif%}
+								{% endfor %}
+							</select>
+							<a class="btn btn-primary" onclick="productos(); return false">Validar Producto</a>
+						</div>
+						{% elseif producto | length %}
+						<div class="form-group">
+							<label for="idProducto">Producto</label>
+							<input type="hidden" name="idProducto" id="idProducto" class="form-control" value="{{ producto.id }}">
+							<input type="text" class="form-control" value="{{ producto.nombre }}" readonly="">
+						</div>
+						{% elseif (precios.count>0) and proveedor %}
+						<div class="form-group">
+							<label for="idProducto">Producto</label>
+							<select class="form-control" name="idProducto" id="idProducto">
+								{% for row in precios %}
+									{% if row.id==old.idProducto %}
+										<option class="option" value="{{row.idProducto}}" selected="true">
+											{{row.producto.nombre}} ${{row.precio}} User: {{row.usuario.nombreUsuario}}
+										</option>
+									{% else %}
+										<option class="option" value="{{row.idProducto}}">
+											{{row.producto.nombre}} ${{row.precio}} User: {{row.usuario.nombreUsuario}}
+										</option>
+									{% endif%}
+								{% endfor %}
+							</select>
+						</div>
+						{% else %}
+							<label>No hay registros de Productos con Precios</label>
+						{% endif %}
+
+						{% if proveedores | length %}
+						<div class="form-group">
+							<label for="proveedor">Proveedor</label>
+							<select class="form-control" name="proveedor" id="proveedor">
+								{% for row in proveedores %}
+									{% if row.id==old.idProveedor %}
+										<option class="option" value="{{row.id}}" selected="true">
+											{{row.nombre}}
+										</option>
+									{% else %}
+										<option class="option" value="{{row.id}}">
+											{{row.nombre}}
+										</option>
+									{% endif%}
+								{% endfor %}
+							</select>
+							<a class="btn btn-primary" onclick="proveedores(); return false">Validar Proveedor</a>
+						</div>
+						{% elseif proveedor | length %}
+						<div class="form-group">
+							<label for="idProveedor">Proveedor</label>
+							<input type="hidden" name="idProveedor" id="idProveedor" class="form-control" value="{{ proveedor.id }}">
+							<input type="text" class="form-control" value="{{ proveedor.nombre }}" readonly="">
+						</div>
+						{% elseif precios and producto %}
+						<div class="form-group">
+							<label for="idProveedor">Producto</label>
+							<select class="form-control" name="idProveedor" id="idProveedor">
+								{% for row in precios %}
+									{% if row.id==old.idProveedor %}
+										<option class="option" value="{{row.idProveedor}}" selected="true">
+											{{row.proveedor.nombre}} ${{row.precio}} User: {{row.usuario.nombreUsuario}}
+										</option>
+									{% else %}
+										<option class="option" value="{{row.idProveedor}}">
+											{{row.proveedor.nombre}} ${{row.precio}} User: {{row.usuario.nombreUsuario}}
+										</option>
+									{% endif%}
+								{% endfor %}
+							</select>
+						</div>
+						{% else %}
+						<label>No hay registros de Proveedores con Precios</label>
+						{% endif %}
+
+						{% if (old) or ((proveedor or producto) and (precios.count>0)) %}
+						<div class="form-group{{ errors.cantidad ? ' has-error' : ''}}">
+							<label for="cantidad">Cantidad</label>
+							<input type="number" name="cantidad" id="cantidad" class="form-control" value="{{ old.cantidad }}" {{ errors.cantidad ? ' readonly="" ' : ''}}>
+							{% if errors.cantidad %}
+								<span class="help-block">{{ errors.cantidad | first }}</span>
+							{% endif %}
+						</div>
+							{% if precios.count>0 %}
+								{% if old.id %}
+								<button type="submit" class="btn btn-default">Modificar</button>
+								{% else %}
+								<button type="submit" class="btn btn-default">Agregar</button>
+								<a class="btn btn-primary" href="{{ path_for('almacen.listacompra.detalle.new',{'idListaCompra': listacompra.id }) }}">Limpiar</a>
+								{% endif %}
+							{% endif %}
+
+						{% endif %}
+
+						{{ csrf.field | raw }}
+					</form>
+				</div>
+			</div>
+			<div class="panel panel-footer">
+				<a class="btn btn-primary" href="{{ path_for('almacen.listacompra.edit',{'id': listacompra.id }) }}">Volver</a>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		function productos(){
+			var id = $('#producto option:selected').val().toString();
+			var str = "{{ path_for('almacen.listacompra.producto',{'idListaCompra':listacompra.id }) }}";
+			location.href = str.concat(id);
+		}
+
+		function proveedores(){
+			var id = $('#proveedor option:selected').val().toString();
+			var str = "{{ path_for('almacen.listacompra.proveedor',{'idListaCompra':listacompra.id }) }}";
+			location.href = str.concat(id);
+		}
+	</script>
+{% endblock %}

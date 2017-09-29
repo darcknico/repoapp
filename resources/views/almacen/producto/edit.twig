@@ -1,0 +1,97 @@
+{% extends 'templates/app.twig' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="panel panel-default">
+				{% if old.id %}
+				<div class="panel-heading">Modificar Producto</div>
+				{% else %}
+				<div class="panel-heading">Agregar Producto</div>
+				{% endif %}
+				<div class="panel-body">
+					{% if old.id %}
+					<form action="{{ path_for('almacen.producto.edit',{'id':old.id}) }}" method="post" autocomplete="off">
+					{% else %}
+					<form action="{{ path_for('almacen.producto')}}" method="post" autocomplete="off">
+					{% endif %}
+						<div class="form-group{{ errors.idMarca ? ' has-error' : ''}}">
+							<label for="idMarca">Marca</label>
+							<select class="form-control" name="idMarca" id="idMarca">
+								{% for row in data %}
+									{% if row.id==old.idMarca %}
+										<option class="option" value="{{row.id}}" selected="true">
+											{{row.nombre}}
+										</option>
+									{% else %}
+										<option class="option" value="{{row.id}}">
+											{{row.nombre}}
+										</option>
+									{% endif%}
+								{% endfor %}
+							</select>
+							{% if errors.idMarca %}
+								<span class="help-block">{{ errors.idMarca | first }}</span>
+							{% endif %}
+						</div>
+						<div class="form-group{{ errors.nombre ? ' has-error' : ''}}">
+							<label for="nombre">Nombre</label>
+							<input type="text" name="nombre" id="nombre" class="form-control" value="{{ old.nombre }}">
+							{% if errors.nombre %}
+								<span class="help-block">{{ errors.nombre | first }}</span>
+							{% endif %}
+						</div>
+
+						<div class="form-group{{ errors.descripcion ? ' has-error' : ''}}">
+							<label for="descripcion">Descripcion</label>
+							<input type="text" name="descripcion" id="descripcion" class="form-control" value="{{ old.descripcion }}">
+							{% if errors.descripcion %}
+								<span class="help-block">{{ errors.descripcion | first }}</span>
+							{% endif %}
+						</div>
+
+						{% if old.id %}
+						<button type="submit" class="btn btn-default">Modificar</button>
+						{% else %}
+						<button type="submit" class="btn btn-default">Agregar</button>
+						{% endif %}
+
+						{{ csrf.field | raw }}
+					</form>
+					<br>
+					{% if old.id %}
+					<div class="panel panel-default">
+						<div class="panel-footer">Imagenes</div>
+							{% if imagenes | length %}
+							<table class="table table-condensed">
+								<thead>
+									<tr>
+										<th>Imagen</th>
+										<th>Fecha Subido</th>
+										<th>Opciones</th>
+									</tr>
+									</thead>
+									<tbody>
+									{% for row in imagenes %}
+									<tr>
+										<td><img src="{{ base_url()}}/{{row.optimizado }}" class="img-rounded"/></td>
+										<td>{{row.creado}}</td>
+										<td>
+											<a href="{{ path_for('almacen.producto.imagen.delete',{'idProducto':row.idProducto,'id':row.id}) }}" class='btn btn-default btn-xs' role='button'><span class='glyphicon glyphicon-remove'></span></a>
+										</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+							{% else %}
+							<label>No hay Imagenes</label>
+							{% endif %}
+							<a class="btn btn-primary" href="{{ path_for('almacen.producto.imagen',{'idProducto':old.id}) }}">Agregar Imagen</a>
+						</div>
+					</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
